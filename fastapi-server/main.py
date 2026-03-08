@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
+
 app = FastAPI()
 
 origins = [
@@ -19,7 +20,12 @@ app.add_middleware(
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True
+)
 
 @app.get("/")
 def home():
@@ -30,3 +36,10 @@ def test_db():
     with engine.connect() as conn:
         result = conn.execute("SELECT 1")
     return {"db": "connected"}
+
+@app.get("/data")
+def data():
+    return JSONResponse(
+        {"data": "example"},
+        headers={"Cache-Control": "public, max-age=60"}
+    )
