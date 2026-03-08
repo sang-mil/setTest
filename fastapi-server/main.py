@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,text
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
@@ -32,9 +32,9 @@ def home():
     return {"message": "API running"}
 
 @app.get("/db")
-def test_db():
+def db_test():
     with engine.connect() as conn:
-        result = conn.execute("SELECT 1")
+        conn.execute(text("SELECT 1"))
     return {"db": "connected"}
 
 @app.get("/data")
